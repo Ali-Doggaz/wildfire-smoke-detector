@@ -33,6 +33,9 @@ if __name__ == '__main__':
         # load a pre-trained model 
         pre_trained_model = YOLO(params['model_type'])
 
+        # Start MLflow run
+        mlflow.start_run()
+
         # train 
         model = pre_trained_model.train(
             data=data_yaml_path,
@@ -51,6 +54,13 @@ if __name__ == '__main__':
         mlflow.log_param('epochs',params['epochs'])
         mlflow.log_param('optimizer', params['optimizer'])
         mlflow.log_param('learning_rate', params['lr0'])
+
+        # Log the trained model to MLflow
+        mlflow.pytorch.log_model(model, "model")
+
+        mlflow.log_metric('train_loss', model.results['train'][0]['box']['loss'])
+        mlflow.log_metric('train_mAP', model.results['train'][0]['box']['mAP'])
+        mlflow.log_metric('train_F1', model.results['train'][0]['box']['F1'])
 
         # save model
         save_model(experiment_name=params['name']) 

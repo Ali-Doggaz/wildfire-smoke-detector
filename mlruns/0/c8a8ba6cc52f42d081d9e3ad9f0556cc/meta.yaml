@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Ali/Desktop/school/CS/final/dvc_mlflow_learning/mlruns/0/c8a8ba6cc52f42d081d9e3ad9f0556cc/artifacts
+end_time: 1686416310031
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: c8a8ba6cc52f42d081d9e3ad9f0556cc
+run_name: yolov8s_exp_v1
+run_uuid: c8a8ba6cc52f42d081d9e3ad9f0556cc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1686416298204
+status: 4
+tags: []
+user_id: Ali
