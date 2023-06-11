@@ -1,5 +1,5 @@
 [core]
-    remote = remote
+    remote = origin
     autostage = true
 ['remote "origin"']
     url = https://dagshub.com/Ali-Doggaz/wildfire-smoke-detector.dvc
