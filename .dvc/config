@@ -1,2 +1,7 @@
+[core]
+    remote = remote
+    autostage = true
 ['remote "origin"']
     url = https://dagshub.com/Ali-Doggaz/wildfire-smoke-detector.dvc
+['remote "remote"']
+    url = ../dvc_remote

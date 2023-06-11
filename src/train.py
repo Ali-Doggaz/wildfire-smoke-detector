@@ -2,8 +2,10 @@ import os
 from pathlib import Path
 
 import mlflow
+import torch
 import yaml
 from dotenv import load_dotenv
+from torch import nn
 from ultralytics import YOLO
 
 from utils import save_metrics_and_params, save_model
@@ -18,6 +20,29 @@ data_dir = os.path.join(root_dir, "data/raw/wildfire-raw-yolov8")
 data_yaml_path = os.path.join(data_dir, "data.yaml")
 metrics_path = os.path.join(root_dir, 'reports/train_metrics.json')
 
+def validate_model(model, val_loader, device, loss_criterion):
+    model.eval()
+    total_loss = 0.0
+    total_correct = 0
+    total_samples = 0
+
+    with torch.no_grad():
+        for images, labels in val_loader:
+            images = images.to(device)
+            labels = labels.to(device)
+
+            outputs = model(images)
+            loss = loss_criterion(outputs, labels)
+            _, predicted = torch.max(outputs, 1)
+
+            total_loss += loss.item() * images.size(0)
+            total_correct += (predicted == labels).sum().item()
+            total_samples += images.size(0)
+
+    accuracy = total_correct / total_samples
+    loss = total_loss / total_samples
+
+    return accuracy, loss
 
 if __name__ == '__main__':
 
@@ -32,7 +57,7 @@ if __name__ == '__main__':
     with mlflow.start_run(run_name=params['name']):
         # load a pre-trained model 
         pre_trained_model = YOLO(params['model_type'])
-
+        # mlflow.end_run()
         # Start MLflow run
         mlflow.start_run()
 
@@ -56,11 +81,11 @@ if __name__ == '__main__':
         mlflow.log_param('learning_rate', params['lr0'])
 
         # Log the trained model to MLflow
-        mlflow.pytorch.log_model(model, "model")
+        # mlflow.pytorch.log_model(model, "model")
 
-        mlflow.log_metric('train_loss', model.results['train'][0]['box']['loss'])
-        mlflow.log_metric('train_mAP', model.results['train'][0]['box']['mAP'])
-        mlflow.log_metric('train_F1', model.results['train'][0]['box']['F1'])
+
+        # Validate the model
+        # loss_criterion = nn.CrossEntropyLoss()
 
         # save model
         save_model(experiment_name=params['name']) 
@@ -68,7 +93,7 @@ if __name__ == '__main__':
         # save metrics csv file and training params 
         save_metrics_and_params(experiment_name=params['name'])
 
-
+        mlflow.end_run()
 
          
 
